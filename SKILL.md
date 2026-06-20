@@ -46,9 +46,11 @@ These are the workflows agents are usually asked for. Each links to depth.
 
 ### Create a short link
 Minimum input is a `target_url`; you get back a `code` and `short_url`. Optional:
-custom `domain_hostname` (must be a verified custom domain), custom `code`,
-`expires_at`, and SEO/social-preview overrides. See `references/rest-api.md` →
-Links.
+custom `domain_hostname` (must be a verified custom domain), custom `code`
+(**only valid together with `domain_hostname`**), `expires_at`, `tag_ids`, and
+SEO/social-preview overrides. Links can also carry advanced behavior: `password`
+protection, a `max_clicks` cap, geo/device `routing_rules`, weighted `ab_variants`
+(A/B testing), and `track_conversions`. See `references/rest-api.md` → Links.
 
 ```bash
 curl -X POST https://api.rerout.co/v1/links \
@@ -57,15 +59,25 @@ curl -X POST https://api.rerout.co/v1/links \
   -d '{"target_url":"https://example.com/sale"}'
 ```
 
+To create many at once, `POST /v1/links/batch` (up to 500 items, partial
+success, `207` response).
+
+### Record a conversion
+For links with `track_conversions` enabled, attribute downstream events
+(purchases, signups) back to a click: `POST /v1/conversions` with the
+`click_id` captured at redirect plus an `event_name` (and optional
+`value_cents`/`currency`). Idempotent on `(click_id, event_name)`.
+
 ### Render a QR code
 Every link has a QR endpoint: `GET /v1/links/{code}/qr` (SVG), tunable via
 `size`, `margin`, `ecc`, `domain`, `refresh`. SDKs expose both a pure URL builder
 and an authenticated fetch. See `references/rest-api.md` → QR.
 
 ### Read analytics
-Per-link: `GET /v1/links/{code}/stats?days=30`. Whole project:
-`GET /v1/projects/me/stats?days=30`. Returns totals plus country/referrer/
-device/browser breakdowns.
+Per-link: `GET /v1/links/{code}/stats?days=30` — totals plus **country and
+referrer** breakdowns. Whole project: `GET /v1/projects/me/stats?days=30` —
+adds a daily series and **device/browser/top-code** breakdowns. `days` is
+1–90 (default 30).
 
 ### Manage webhook endpoints
 Create/list/delete endpoints that receive event deliveries. **API-key

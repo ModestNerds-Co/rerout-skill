@@ -41,7 +41,9 @@ provider-neutral.
 
 ## Scope (v1)
 
-- Create / list / update / delete short links
+- Create / list / update / delete short links (incl. bulk `POST /v1/links/batch`)
+- Advanced link options: password, click caps, geo/device routing, A/B variants
+- Conversion tracking (`POST /v1/conversions`)
 - QR code URLs and rendering
 - Link and project analytics
 - Webhook endpoint **management** (create / list / delete)

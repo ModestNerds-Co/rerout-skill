@@ -2,14 +2,29 @@
 
 Official SDKs wrap the REST API with typed models, error handling, retries, and
 webhook signature verification. Source: <https://github.com/ModestNerds-Co/rerout-sdks>.
-Current version: **0.3.0** (adds the `webhooks` management namespace).
+Current version: **0.4.0** (adds batch link creation and the `conversions`
+namespace; 0.3.0 added `webhooks` management).
 
-Every SDK exposes the same namespaces on the client: **links**, **project**,
-**qr**, and **webhooks** (management), plus a standalone signature **verifier**.
-Construct the client with the project API key (`rrk_…`), ideally from
-`REROUT_API_KEY`.
+Every SDK exposes the same namespaces on the client: **links** (incl. batch),
+**conversions**, **project**, **qr**, and **webhooks** (management), plus a
+standalone signature **verifier**. Construct the client with the project API key
+(`rrk_…`), ideally from `REROUT_API_KEY`.
 
-Below: install, construct, and the new webhook-management calls per language.
+The per-language snippets below focus on webhook management; the `links`,
+`conversions`, batch, and QR methods follow the same `rerout.<namespace>.<method>`
+shape. For example, in TypeScript:
+
+```ts
+const link = await rerout.links.create({ target_url: 'https://example.com/sale' })
+const batch = await rerout.links.createBatch([
+  { target_url: 'https://example.com/a' },
+  { target_url: 'https://example.com/b' },
+])
+await rerout.conversions.record({ click_id: 'clk_…', event_name: 'purchase', value_cents: 4999, currency: 'USD' })
+```
+
+Python mirrors this as `rerout.links.create_batch([...])` and
+`rerout.conversions.record(...)`; other languages use their idiomatic casing.
 
 ## TypeScript / JavaScript — `@rerout/sdk`
 ```bash
